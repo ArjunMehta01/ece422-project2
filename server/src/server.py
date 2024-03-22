@@ -52,6 +52,6 @@ def handleClient(connection):
 		processCommand(command)
 
 def login(connection):
-	username, password, pubkey = connection.read().split(';')
+	username, password, pubkey = connection.read().split(' ')
 	
 

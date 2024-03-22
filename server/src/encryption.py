@@ -5,4 +5,11 @@ import rsa
 # include a method to set the client pubkey after construction since it only comes in on the first decrypted message
 # send recv methods should include a standard buff size so we dont need to specify it - shit design but fuck it we go fast
 class rsaSocket:
-	pass
+	def __init__(self, connection):
+		self.connection = connection
+		self.priv_key = loadPrivKey()
+
+
+def loadPrivKey():
+	
+		
