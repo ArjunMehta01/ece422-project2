@@ -49,10 +49,10 @@ def login(socket, public_key):
     message = username + " " + password + " " + public_key
     socket.sendall(message.encode())
     
-    response = client_socket.recv(1024).decode()
+    response = socket.recv(1024).decode()
     print("Received:", response)
     
-    if reponse.lower() == 'login failed':
+    if response.lower() == 'login failed':
         return False
     
     return True
