@@ -72,55 +72,64 @@ def process_command(socket, message):
     if tokenized_command[0] == "pwd":
         if len(tokenized_command) != 1:
             print("pwd: too many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True
     elif tokenized_command[0] == "ls":
-        if len(tokenized_command) != 2:
+        if len(tokenized_command) != 1:
             print("ls: too few/many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True
     elif tokenized_command[0] == 'cd':
         if len(tokenized_command) != 2:
             print("cd: too few/many arguments")
-            return
-        # forward info via socket
-        return        
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True  
     elif tokenized_command[0] == 'mkdir':
+        print("mkdir: too few/many arguments")
         if len(tokenized_command) != 2:
             print("mkdir: too few/many arguments")
-            return
-        # forward info via socket
-        return     
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True
     elif tokenized_command[0] == 'touch':
         if len(tokenized_command) != 2:
             print("touch: too few/many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True            
     elif tokenized_command[0] == 'cat':
         if len(tokenized_command) != 2:
             print("cat: too few/many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True            
     elif tokenized_command[0] == 'echo':
         if len(tokenized_command) != 2:
             print("echo: too few/many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True  
     elif tokenized_command[0] == 'mv':
         if len(tokenized_command) != 2:
             print("mv: too few/many arguments")
-            return
-        # forward info via socket
-        return
+            return False
+        else:
+            socket.sendall(message.encode())
+            return True  
     else:
         print("invalid command")
-        return
-        
+        return False
+      
         
 if __name__ == "__main__" :
     main()
