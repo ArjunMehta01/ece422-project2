@@ -111,14 +111,16 @@ def process_command(socket, message):
             return False
         else:
             socket.sendall(message.encode())
-            return True            
+            return True  
+          
     elif tokenized_command[0] == 'echo':
         if len(tokenized_command) != 2:
             print("echo: too few/many arguments")
             return False
         else:
             socket.sendall(message.encode())
-            return True  
+            return True
+  
     elif tokenized_command[0] == 'mv':
         if len(tokenized_command) != 2:
             print("mv: too few/many arguments")
