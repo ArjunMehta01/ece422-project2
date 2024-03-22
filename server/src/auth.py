@@ -5,7 +5,3 @@
 
 class user:
 	pass
-
-class groupList:
-	pass
-
