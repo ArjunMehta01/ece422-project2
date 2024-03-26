@@ -1,9 +1,14 @@
 import socket
+from encryption import rsaSocket
+from auth import login
+import filesystem
+
 
 MESSAGE_SIZE = 1024
 
 def main():
 	server_socket = startServer('localhost', 12345)
+	filesystem.init()
 
 	while True:
 		connection, client_address = server_socket.accept()
@@ -28,30 +33,23 @@ def startServer(ip, port):
 	return server_socket
 
 def handleClient(connection):
-	# Start with login
 
-	# get rsa connection
+	rsaConnection = rsaSocket(connection)
 
-	(authenticated, pubKey) = login(connection) # switch to rsa connection
+	(authenticated, user) = login(rsaConnection.read())
 
-	if pubKey:
-		# set rsa socket pubkey
-		pass
+	if user.get_pub_key() is not None:
+		rsaConnection.setPubKey(user.get_pub_key())
 	else:
 		connection.sendall("INVALID PUBKEY") # unencrypted
 		return
 
 	if not authenticated:
-		message = "LOGIN FAILED"
-		connection.sendall(message) # switch to rsa socket
+		rsaConnection.sendall("LOGIN FAILED") # switch to rsa socket
 		return
 	
 	# start accepting and processing commands
 	while True:
-		command = connection.recv(1024) # switch to rsa socket
-		processCommand(command)
-
-def login(connection):
-	username, password, pubkey = connection.read().split(' ')
-	
-
+		command = rsaConnection.recv() # switch to rsa socket
+		result = processCommand(command)
+		rsaConnection.send(result)
