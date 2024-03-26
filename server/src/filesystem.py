@@ -12,11 +12,13 @@ def getUsers():
 	return
 
 
-def createUserFile(username, password):
+def createUserFile(username, password, groups):
     filename = '.user'
     try:
         with open(filename, 'w') as file:
-            file.write(f'Username: {username}\nPassword: {password}')
+            file.write('===\n')
+            file.write(f'username: {username}\npassword: {password}\n')
+            file.write(f'groups: [{", ".join(groups)}]\n')
         print(f'File "{filename}" created successfully.')
     except Exception as e:
     	print(f'Error creating file: {e}')
@@ -96,6 +98,7 @@ def add_user(username, password, groups):
         print(f'Error adding user: {e}')
 
 # Example usage:
+createUserFile("admin", "passwardo", ["a", "balls"])
 add_user('peepeepoopoo', 'balls', ['a', 'b', 'c'])
 
 print(getUsers())
