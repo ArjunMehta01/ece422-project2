@@ -13,7 +13,7 @@ def getUsers():
 
 
 def createUserFile(username, password, groups):
-    filename = '.user'
+    filename = '../filesystem/.user'
     try:
         with open(filename, 'w') as file:
             file.write('===\n')
@@ -24,7 +24,7 @@ def createUserFile(username, password, groups):
     	print(f'Error creating file: {e}')
      
 def getUsers():
-    filename = '.user'
+    filename = '../filesystem/.user'
     users_dict = {}
     try:
         with open(filename, 'r') as file:
@@ -86,7 +86,7 @@ def getUsers():
 print(getUsers())
 
 def add_user(username, password, groups):
-    filename = '.user'
+    filename = '../filesystem/.user'
     try:
         with open(filename, 'a') as file:
             file.write('===\n')
