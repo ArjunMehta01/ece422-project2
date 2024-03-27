@@ -78,8 +78,7 @@ def getUsers():
 # modify('admin', {'password': 'newpassword', 'groups': ['x', 'y', 'z']})
 
 
-print(getUsers())
-
+# print(getUsers())
 def add_user(username, password, groups):
     filename = '../filesystem/.user'
     try:
@@ -93,8 +92,8 @@ def add_user(username, password, groups):
         print(f'Error adding user: {e}')
 
 # Example usage:
-createUserFile("admin", "passwardo", ["a", "balls"])
-add_user('peepeepoopoo', 'balls', ['a', 'b', 'c'])
+# createUserFile("admin", "passwardo", ["a", "balls"])
+# add_user('peepeepoopoo', 'balls', ['a', 'b', 'c'])
 
-print(getUsers())
+# print(getUsers())
 
