@@ -47,5 +47,4 @@ def load_priv_or_create_keys():
 			f.write(public_key.save_pkcs1())
 		with open(PRIV_KEY_FILE_PATH, 'wb') as f:
 			f.write(private_key.save_pkcs1())
-	
 	return private_key

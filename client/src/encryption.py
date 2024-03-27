@@ -24,7 +24,7 @@ class rsaSocket:
 		encrypted = rsa.encrypt(message.encode(), self.pub_key)
 		self.connection.sendall(encrypted)
 	
-	def send(self, message, pub_key_string):
+	def send_add_pubkey(self, message, pub_key_string):
 		pub_key = rsa.PublicKey.load_pkcs1(pub_key_string)
 		encrypted = rsa.encrypt(message.encode(), pub_key)
 		self.connection.sendall(encrypted)
@@ -45,5 +45,4 @@ def load_priv_or_create_keys():
 			f.write(public_key.save_pkcs1())
 		with open(PRIV_KEY_FILE_PATH, 'wb') as f:
 			f.write(private_key.save_pkcs1())
-	
 	return private_key

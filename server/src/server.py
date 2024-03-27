@@ -8,7 +8,7 @@ MESSAGE_SIZE = 1024
 
 def main():
 	server_socket = startServer('localhost', 12345)
-	filesystem.init()
+	filesystem.init('admin', 'currently_unhashed', [])
 
 	while True:
 		connection, client_address = server_socket.accept()
@@ -17,7 +17,9 @@ def main():
 			print("Connection from", client_address)
 
 			handleClient(connection, client_address) # if we have time for multiconnection we just need to run this function in a thread
-				
+   
+		except Exception as e:
+			print(e)	
 		finally:
 			# Clean up the connection
 			connection.close()
@@ -53,3 +55,7 @@ def handleClient(connection):
 		command = rsaConnection.recv() # switch to rsa socket
 		
 		rsaConnection.send(result)
+  
+  
+if __name__ == "__main__" :
+    main()
