@@ -33,7 +33,7 @@ class rsaSocket:
 
 
 def loadPrivKey():
-	with open('../.secrets/id_rsa', 'r') as priv_key_file:
+	with open('../.secrets/private_key.pem', 'r') as priv_key_file:
 		private_key_string = priv_key_file.read().strip()
 		private_key = rsa.PrivateKey.load_pkcs1(private_key_string)
 	return private_key

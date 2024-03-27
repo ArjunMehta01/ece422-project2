@@ -1,7 +1,15 @@
+import rsa
 import socket
 from encryption import rsaSocket
 
-SERVER_PUB_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDixmkplIjjGnD4v4ZDYbzlhsKw0ENNGajdBkySyYSMbLQ9eV9yKtpU4CZY9iOHJ6eA+FiZDb3fAyYSOth65A4LV5gcq/uyGnRddGDKpm9ZW76EDbp5IBBmMlKVzQYtNB/rs4v1tTMfrdW3sOtpz9th6RM9l1AR23Z6MkSQjchc71P/botpaUSFwP7nUl4yj+x812evJUPynQikIBrRNG4ooyb6IXY6odTCogn71UhBb678hhFnSLB5pfY6VDI+QdpzpYnzu5DriH0erkHdQSdYQh5yvVPLZlyGOk4vstisHc/w+WuV1DL7mozW5m9T8pH+RsjWf0dWW1VpnXULjD2wV2bWx2P0jhfquA2fzEQ6kO0gTv/ewf9Ec0nwcCAOhl/qMYRYIMvM1/bxxBn4k0NSWXTEsr3QSUfnNXFE18zxF0latavyUz1/sZP5rzKUHTjuMtBYVYPAs4RzplGL81fA3aNYeYPrGqKMck83AZV/ElpogPh139haJNtJXs9on3M= intelliwavetech\svirk@LAPTOP-HUS0S65J"
+SERVER_PUB_KEY = ""
+
+def loadPubKey(path):
+    with open(path, 'rb') as pub_key_file:  # Assuming the public key is stored in a file named 'public_key.pem'
+        public_key_string = pub_key_file.read()
+        public_key_string = public_key_string.replace(b'\\n', b'\n').decode('ascii')
+        # pub_innit = rsa.PublicKey.load_pkcs1(public_key_string)
+        return public_key_string
 
 def main():
     # Create a TCP/IP socket
@@ -12,21 +20,21 @@ def main():
     logged_in = False
     
     try:
-        original_client = client_socket.connect(server_address)  
-        client_socket = rsaSocket(client_socket)
-        client_socket.setPubKey(SERVER_PUB_KEY)
+        client_socket.connect(server_address)  
+        rsa_socket = rsaSocket(client_socket)
+        rsa_socket.setPubKey(loadPubKey("../.secrets/public_key_server.pem"))
         
         while True:
-            logged_in = login(socket)
+            logged_in = login(rsa_socket, loadPubKey("../.secrets/public_key.pem"))
             if logged_in:
                 while True:
                     message = input("Enter your message:")
-                    client_socket.send(message)
+                    rsa_socket.send(message)
                     print("Sending:", message)
                 
 
                     # Receive data
-                    response = client_socket.recv()
+                    response = rsa_socket.recv()
                     print("Received:", response)
                     
                     if message.lower()== "LOGOUT":
@@ -41,7 +49,7 @@ def main():
         print("[INFO] User interrupted. Exiting.")
     finally:
     # Clean up the connection
-        original_client.close()
+        client_socket.close()
     
 
 def login(socket, public_key):
@@ -49,7 +57,7 @@ def login(socket, public_key):
     username = input("Enter your username: ")
     password = input("Enter your password: ")
     message = username + " " + password + " " + public_key
-    socket.send(message.encode())
+    socket.send(message)
     
     response = socket.recv()
     print("Received:", response)

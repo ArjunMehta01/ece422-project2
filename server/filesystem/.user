@@ -1,8 +1,4 @@
 ===
 username: admin
-password: passwardo
-groups: [a, balls]
-===
-username: peepeepoopoo
-password: balls
-groups: [a, b, c]
+password: currently_unhashed
+groups: []
