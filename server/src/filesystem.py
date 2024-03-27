@@ -12,7 +12,7 @@ def getUsers():
 	return
 
 
-def createUserFile(username, password, groups):
+def init(username, password, groups):
     filename = '../filesystem/.user'
     try:
         with open(filename, 'w') as file:
