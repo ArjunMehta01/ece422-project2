@@ -7,11 +7,6 @@ class file:
 class folder:
 	pass
 
-
-def getUsers():
-	return
-
-
 def createUserFile(username, password, groups):
     filename = '../filesystem/.user'
     try:
