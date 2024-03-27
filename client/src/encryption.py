@@ -1,11 +1,18 @@
 import rsa
+import os
+import socket
 
 MESSAGE_SIZE = 1024
 
+PUB_KEY_FILE_PATH = '../.secrets/id_rsa.pub'
+PRIV_KEY_FILE_PATH = '../.secrets/id_rsa'
+
 class rsaSocket:
-	def __init__(self, connection):
-		self.connection = connection
-		self.priv_key = loadPrivKey()
+	def __init__(self, serverIp, serverPort):
+		server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		server_connection.connect((serverIp, serverPort))
+		self.connection = server_connection
+		self.priv_key = load_priv_or_create_keys()
 		self.pub_key = None
 	
 	def setPubKey(self, pub_key_string):
@@ -27,8 +34,16 @@ class rsaSocket:
 		message = rsa.decrypt(encrypted, self.priv_key).decode()
 		return message
 	
-def loadPrivKey():
-	with open('./.secrets/id_rsa', 'r') as priv_key_file:
-		private_key_string = priv_key_file.read().strip()
-		private_key = rsa.PrivateKey.load_pkcs1(private_key_string)
+def load_priv_or_create_keys():
+	if os.path.exists(PRIV_KEY_FILE_PATH):
+		with open(PRIV_KEY_FILE_PATH, 'rb') as f:
+			private_key = rsa.PublicKey.load_pkcs1(f.read())
+	else:
+		(public_key, private_key) = rsa.newkeys(1024)
+
+		with open(PUB_KEY_FILE_PATH, 'wb') as f:
+			f.write(public_key.save_pkcs1())
+		with open(PRIV_KEY_FILE_PATH, 'wb') as f:
+			f.write(private_key.save_pkcs1())
+	
 	return private_key
