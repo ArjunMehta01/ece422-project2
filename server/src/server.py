@@ -53,7 +53,7 @@ def handleClient(connection):
 	# start accepting and processing commands
 	while True:
 		command = rsaConnection.recv() # switch to rsa socket
-		result = processCommand(command)
+		
 		rsaConnection.send(result)
   
   

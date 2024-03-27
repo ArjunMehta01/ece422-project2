@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 import os
 import hashlib
 
-FILE_SYSTEM_PATH = '../filesystem/'
+FILE_SYSTEM_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\'
 
 def load_or_create_key():
     """
@@ -31,15 +31,17 @@ def load_or_create_key():
 FERNET_KEY = load_or_create_key()
 
 
-def storeFile(filename: str, content: str):
+def storeFile(encFilepath: str, filename: str, content: str):
+    """Given an encrypted filepath and an unencrypted filename, stores the content of the file in the encrypted filepath."""
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
-    pathTokens = filename.split('\\')
     
-    encPathTokens = [fernet.encrypt(token.encode()).decode() for token in pathTokens]
-    
-    encPath = FILE_SYSTEM_PATH + '\\'.join(encPathTokens)
-    encSignPath = encPath + '.sign'
+    encFileName = fernet.encrypt(filename.encode()).decode()
+    signFileName = encFileName + '.sign'
+
+    newFileFullPath = FILE_SYSTEM_PATH + encFilepath + '\\' + encFileName
+    newSignFullPath = FILE_SYSTEM_PATH + encFilepath + '\\' + signFileName
+
     encContent = fernet.encrypt(content.encode())
     
     hasher.update(content.encode())
@@ -47,15 +49,16 @@ def storeFile(filename: str, content: str):
     signature = fernet.encrypt(hashedContent)
     
     try:
-        with open(encPath, 'wb') as file:
+        os.makedirs(os.path.dirname(newFileFullPath), exist_ok=True)
+        with open(newFileFullPath, 'wb') as file:
             file.write(encContent)
-        with open(encSignPath, 'wb') as file:
+        with open(newSignFullPath, 'wb') as file:
             file.write(signature)
-    except:
-        print('Error writing file')
+    except Exception as e:
+        print(f'Error writing file: {e}')
 
-# assumes the file exists and filename is pre encrypted
 def getFile(filename):
+    """Given an encrypted filename, returns the decrypted content of the file."""
     signatureFileName = filename + '.sign'
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
@@ -71,5 +74,10 @@ def getFile(filename):
         return fernet.decrypt(content).decode()
     else:
         return 'Signature does not match'
+    
+def encryptText(text):
+    """Given a string, returns the encrypted version of the string."""
+    fernet = Fernet(FERNET_KEY)
+    return fernet.encrypt(text.encode()).decode()
     
     
