@@ -8,10 +8,6 @@ class folder:
 	pass
 
 
-def getUsers():
-	return
-
-
 def init(username, password, groups):
     filename = '../filesystem/.user'
     try:
