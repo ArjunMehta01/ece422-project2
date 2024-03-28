@@ -16,7 +16,7 @@ def main():
 		try:
 			print("Connection from", client_address)
 
-			handleClient(connection, client_address) # if we have time for multiconnection we just need to run this function in a thread
+			handleClient(connection) # if we have time for multiconnection we just need to run this function in a thread
    
 		except Exception as e:
 			print(e)	
@@ -38,7 +38,7 @@ def handleClient(connection):
 
 	rsaConnection = rsaSocket(connection)
 
-	(authenticated, user) = login(rsaConnection.read())
+	(authenticated, user) = login(rsaConnection.recv())
 
 	if user.get_pub_key() is not None:
 		rsaConnection.setPubKey(user.get_pub_key())
@@ -53,8 +53,7 @@ def handleClient(connection):
 	# start accepting and processing commands
 	while True:
 		command = rsaConnection.recv() # switch to rsa socket
-		
-		rsaConnection.send(result)
+		print(command)
   
   
 if __name__ == "__main__" :

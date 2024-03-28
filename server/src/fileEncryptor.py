@@ -12,7 +12,7 @@ def load_or_create_key():
     and then loads the key.
     """
     # Try to load the key from the file
-    filepath = '../.secrets/FERNET_KEY'
+    filepath = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\FERNET_KEY'
     try:
         with open(filepath, "rb") as key_file:
             key = key_file.read()

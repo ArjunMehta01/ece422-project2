@@ -3,8 +3,8 @@ import os
 
 MESSAGE_SIZE = 1024
 
-PUB_KEY_FILE_PATH = '../.secrets/id_rsa.pub'
-PRIV_KEY_FILE_PATH = '../.secrets/id_rsa'
+PUB_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\id_rsa.pub'
+PRIV_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\id_rsa'
 
 # takes a raw socket and gives sendall + recv methods that do communication with rsa encryption
 # load up the private key from a local file
@@ -39,7 +39,7 @@ class rsaSocket:
 def load_priv_or_create_keys():
 	if os.path.exists(PRIV_KEY_FILE_PATH):
 		with open(PRIV_KEY_FILE_PATH, 'rb') as f:
-			private_key = rsa.PublicKey.load_pkcs1(f.read())
+			private_key = rsa.PrivateKey.load_pkcs1(f.read())
 	else:
 		(public_key, private_key) = rsa.newkeys(1024)
 

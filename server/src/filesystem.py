@@ -9,7 +9,7 @@ class folder:
 
 
 def init(username, password, groups):
-    filename = '../filesystem/.user'
+    filename = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\.user'
     try:
         with open(filename, 'w') as file:
             file.write('===\n')
@@ -20,7 +20,7 @@ def init(username, password, groups):
     	print(f'Error creating file: {e}')
      
 def getUsers():
-    filename = '../filesystem/.user'
+    filename = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\.user'
     users_dict = {}
     try:
         with open(filename, 'r') as file:
@@ -81,7 +81,7 @@ def getUsers():
 
 # print(getUsers())
 def add_user(username, password, groups):
-    filename = '../filesystem/.user'
+    filename = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\.user'
     try:
         with open(filename, 'a') as file:
             file.write('===\n')
