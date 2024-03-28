@@ -1,5 +1,7 @@
 # store and get files
 # should manage permissions for files
+from argon2 import PasswordHasher
+
 
 class file:
 	pass
@@ -8,12 +10,17 @@ class folder:
 	pass
 
 
-def init(username, password, groups):
+def init(username, password, salt, groups):
     filename = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\.user'
+    pass_hash = PasswordHasher.hash(password, salt)
+    
+    
+    
     try:
         with open(filename, 'w') as file:
             file.write('===\n')
-            file.write(f'username: {username}\npassword: {password}\n')
+            file.write(f'username: {username}\npassword: {pass_hash}\nsalt: {salt}\n')
+            file.write(salt)
             file.write(f'groups: [{", ".join(groups)}]\n')
         print(f'File "{filename}" created successfully.')
     except Exception as e:
