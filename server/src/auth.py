@@ -10,7 +10,7 @@ class user:
 	pass
 
 def login(login_string):
-	username, password, pub_key = login_string.split(' ')
+	username, password, pub_key = login_string.split('][')
 
 	user_dict = getUsers()
 	if username not in user_dict:

@@ -1,5 +1,7 @@
 import rsa
 import os
+from Crypto.Cipher import AES
+import struct
 
 MESSAGE_SIZE = 1024
 
@@ -20,20 +22,81 @@ class rsaSocket:
 		self.pub_key = rsa.PublicKey.load_pkcs1(pub_key_string)
 
 	def send(self, message):
-		if self.pub_key == None:
+		if self.server_pub_key == None:
 			raise Exception('No pub key set')
-		encrypted = rsa.encrypt(message.encode(), self.pub_key)
-		self.connection.sendall(encrypted)
+		
+		aes_rand_key = rsa.randnum.read_random_bits(128)
+		cipher = AES.new(aes_rand_key, AES.MODE_EAX)
+
+		ciphertext, tag = cipher.encrypt_and_digest(message.encode())
+
+		encrypted_aes_tag = rsa.encrypt(tag, self.server_pub_key)
+		encrypted_aes_key = rsa.encrypt(aes_rand_key, self.server_pub_key)
+		encrypted_aes_nonce = rsa.encrypt(cipher.nonce, self.server_pub_key)
+
+		for var in [ciphertext, encrypted_aes_tag, encrypted_aes_key, encrypted_aes_nonce]:
+			# Pack the length of the data (4 bytes integer)
+			length = len(var)
+			length_packed = struct.pack('!I', length)
+
+			# Send the length
+			self.connection.sendall(length_packed)
+
+			# Send the data
+			self.connection.sendall(var)
 	
-	def send(self, message, pub_key_string):
+	def send_add_pubkey(self, message, pub_key_string):
 		pub_key = rsa.PublicKey.load_pkcs1(pub_key_string)
-		encrypted = rsa.encrypt(message.encode(), pub_key)
-		self.connection.sendall(encrypted)
+		aes_rand_key = rsa.randnum.read_random_bits(128)
+		cipher = AES.new(aes_rand_key, AES.MODE_EAX)
+
+		ciphertext, tag = cipher.encrypt_and_digest(message.encode())
+
+		encrypted_aes_tag = rsa.encrypt(tag, pub_key)
+		encrypted_aes_key = rsa.encrypt(aes_rand_key, pub_key)
+		encrypted_aes_nonce = rsa.encrypt(cipher.nonce, pub_key)
+
+		for var in [ciphertext, encrypted_aes_tag, encrypted_aes_key, encrypted_aes_nonce]:
+			# Pack the length of the data (4 bytes integer)
+			length = len(var)
+			length_packed = struct.pack('!I', length)
+
+			# Send the length
+			self.connection.sendall(length_packed)
+
+			# Send the data
+			self.connection.sendall(var)
 	
 	def recv(self):
-		encrypted = self.connection.recv(MESSAGE_SIZE)
-		message = rsa.decrypt(encrypted, self.priv_key).decode()
-		return message
+
+		length_data = self.connection.recv(4)
+		length = struct.unpack('!I', length_data)[0]
+		ciphertext = self.connection.recv(length)
+
+		length_data = self.connection.recv(4)
+		length = struct.unpack('!I', length_data)[0]
+		enc_aes_tag = self.connection.recv(length)
+
+		length_data = self.connection.recv(4)
+		length = struct.unpack('!I', length_data)[0]
+		enc_aes_key = self.connection.recv(length)
+
+		length_data = self.connection.recv(4)
+		length = struct.unpack('!I', length_data)[0]
+		enc_aes_nonce = self.connection.recv(length)
+		
+		aes_tag = rsa.decrypt(enc_aes_tag, self.priv_key)
+		aes_key = rsa.decrypt(enc_aes_key, self.priv_key)
+		aes_nonce = rsa.decrypt(enc_aes_nonce, self.priv_key)
+
+		cipher = AES.new(aes_key, AES.MODE_EAX, nonce=aes_nonce)
+		plaintext = cipher.decrypt(ciphertext)
+
+		try:
+			cipher.verify(aes_tag)
+			return plaintext.decode()
+		except ValueError:
+			return None
 
 
 def load_priv_or_create_keys():
