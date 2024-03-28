@@ -40,7 +40,7 @@ def login(socket, public_key):
     print("LOGIN PLZ")
     username = input("Enter your username: ")
     password = input("Enter your password: ")
-    message = username
+    message = username + "][" + password + "][" + public_key
     socket.send(message)
     
     response = socket.recv()
