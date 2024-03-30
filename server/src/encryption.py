@@ -111,3 +111,8 @@ def load_priv_or_create_keys():
 		with open(PRIV_KEY_FILE_PATH, 'wb') as f:
 			f.write(private_key.save_pkcs1())
 	return private_key
+
+
+def getRSAKey(str: str):
+	"""Turns a string into an RSA key"""
+	return rsa.PublicKey.load_pkcs1(str.encode())
