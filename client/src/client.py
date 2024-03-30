@@ -1,5 +1,10 @@
 import socket
 from encryption import rsaSocket, load_server_pub_key
+import dotenv
+from pathlib import Path
+
+dotenv_path = Path('../.env')
+dotenv.load_dotenv(dotenv_path=dotenv_path)
 
 def main():
     # Create a TCP/IP socket

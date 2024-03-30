@@ -6,9 +6,9 @@ import struct
 
 MESSAGE_SIZE = 1024
 
-SERVER_PUB_KEY_PATH = "C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\client\\.secrets\\SERVER_PUB_KEY"
-PUB_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\client\\.secrets\\id_rsa.pub'
-PRIV_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\client\\.secrets\\id_rsa'
+SERVER_PUB_KEY_PATH = os.getenv('SECRETS_PATH') + 'SERVER_PUB_KEY'
+PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
+PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
 
 class rsaSocket:
 	def __init__(self, serverIp, serverPort):
