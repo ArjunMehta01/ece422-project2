@@ -45,7 +45,7 @@ def handleClient(connection):
 	(authenticated, conn) = login(rsaConnection.recv())
 
 	if conn.getPubKey() is not None:
-		rsaConnection.setPubKey(conn.getPubKey())
+		rsaConnection.setClientPubKey(conn.getPubKey())
 	else:
 		connection.sendall("INVALID PUBKEY") # unencrypted
 		return
@@ -54,9 +54,11 @@ def handleClient(connection):
 		rsaConnection.sendall("LOGIN FAILED") # switch to rsa socket
 		return
 	
+	rsaConnection.send("LOGIN SUCCESS")
 	# start accepting and processing commands
 	while True:
-		command = rsaConnection.recv() # switch to rsa socket
+		command = rsaConnection.recv()
+		rsaConnection.send("COMMAND RECEIVED")
 		print(command)
   
   

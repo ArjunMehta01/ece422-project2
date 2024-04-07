@@ -7,29 +7,21 @@ from fileEncryptor import storeFile, getFile
 from argon2 import PasswordHasher
 from clientConnection import clientConnection
 from encryption import getRSAKey
-import random
 
 class user:
-    def __init__(self, username, password, groups):
+    def __init__(self, username, passHash, groups):
         self.username = username
-        self.salt = getRandomSalt()
-        self.passHash = PasswordHasher().hash(password, salt=self.salt)
+        self.passHash = passHash
         self.groups = groups
     
     def __repr__(self) -> str:
-        return f'===\nusername: {self.username}\npassHash: {self.passHash}\nsalt: {self.salt}\ngroups: {self.groups}\n'
+        return f'username: {self.username}\npassHash: {self.passHash}\ngroups: {self.groups}\n===\n'
     
     def get_username(self):
         return self.username
     
     def get_passHash(self):
         return self.passHash
-    
-    def get_salt(self):
-        return self.salt
-    
-    def get_salt_str(self):
-        return self.salt.decode()
     
     def get_groups(self):
         return self.groups
@@ -46,14 +38,17 @@ def login(login_string):
 	else:
 		user = user_dict[username]
 		acc_pass_hash = user.get_passHash()
-		salt = user.get_salt()
-		test_pass_hash = PasswordHasher.hash(password, salt)
+		test_pass_hash = PasswordHasher().verify(acc_pass_hash, password)
 
-		if acc_pass_hash == test_pass_hash:
+		if test_pass_hash:
 			clientConn = clientConnection(getRSAKey(pub_key_str), username)
 			return (True, clientConn)
 		else:
 			return (False, None)
+
+def create_user(username, password, groups):
+    passHash = PasswordHasher().hash(password)
+    return user(username, passHash, groups)
 
 def init_auth():
     filename = '.user'
@@ -61,11 +56,14 @@ def init_auth():
     ADMIN_PASS = "admin"
     ADMIN_GROUPS = ["admin"]
     
-    admin_user = user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUPS)
+    admin_user = create_user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUPS)
+    
+    # if the file already exists, don't overwrite it
+    if getFile(filename):
+        return
     
     try:
         storeFile('', filename, '', False)
-        print('balls')
         modify_user(admin_user)
     except Exception as e:
         print(f'Error initializing file: {e}')
@@ -77,10 +75,12 @@ def getUsers() -> dict[str, user]:
     users_dict = {}
     user_info = {}
     for line in usersFileContent.split('\n'):
+        if not line:
+            continue
         line = line.strip()
         if line == '===':
             if user_info:
-                users_dict[user_info['username']] = user(user_info['username'], user_info['passHash'], user_info['salt'], user_info['groups'])
+                users_dict[user_info['username']] = user(user_info['username'], user_info['passHash'], user_info['groups'])
                 user_info = {}
         else:
             key, value = line.split(': ')
@@ -88,6 +88,7 @@ def getUsers() -> dict[str, user]:
                 user_info[key] = value[1:-1].split(', ')
             else:
                 user_info[key] = value
+        
     
     return users_dict
 
@@ -101,8 +102,3 @@ def modify_user(user: user):
         storeFile('', filename, usersFileContent, False)
     except Exception as e:
         print(f'Error modifying user: {e}')
-        
-def getRandomSalt() -> bytes:
-    ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    chars = [random.choice(ALPHABET) for _ in range(16)]
-    return ''.join(chars).encode()

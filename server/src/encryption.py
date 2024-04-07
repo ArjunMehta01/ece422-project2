@@ -17,23 +17,20 @@ class rsaSocket:
 	def __init__(self, connection):
 		self.connection = connection
 		self.priv_key = load_priv_or_create_keys()
-		self.pub_key = None
+		self.client_pub_key = None
 	
-	def setPubKey(self, pub_key_string):
-		self.pub_key = rsa.PublicKey.load_pkcs1(pub_key_string)
+	def setClientPubKey(self, pub_key):
+		self.client_pub_key = pub_key
 
 	def send(self, message):
-		if self.server_pub_key == None:
-			raise Exception('No pub key set')
-		
 		aes_rand_key = rsa.randnum.read_random_bits(128)
 		cipher = AES.new(aes_rand_key, AES.MODE_EAX)
 
 		ciphertext, tag = cipher.encrypt_and_digest(message.encode())
 
-		encrypted_aes_tag = rsa.encrypt(tag, self.server_pub_key)
-		encrypted_aes_key = rsa.encrypt(aes_rand_key, self.server_pub_key)
-		encrypted_aes_nonce = rsa.encrypt(cipher.nonce, self.server_pub_key)
+		encrypted_aes_tag = rsa.encrypt(tag, self.client_pub_key)
+		encrypted_aes_key = rsa.encrypt(aes_rand_key, self.client_pub_key)
+		encrypted_aes_nonce = rsa.encrypt(cipher.nonce, self.client_pub_key)
 
 		for var in [ciphertext, encrypted_aes_tag, encrypted_aes_key, encrypted_aes_nonce]:
 			# Pack the length of the data (4 bytes integer)

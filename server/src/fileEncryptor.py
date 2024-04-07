@@ -30,7 +30,6 @@ def load_or_create_key():
 
 FERNET_KEY = load_or_create_key()
 
-
 def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = True):
     """Given an encrypted filepath and an unencrypted filename, stores the content of the file in the encrypted filepath."""
     fernet = Fernet(FERNET_KEY)
@@ -45,19 +44,26 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
     
     FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
     # print(FILE_SYSTEM_PATH)
-    newFileFullPath = FILE_SYSTEM_PATH + encFilepath + '/' + encFileName
-    newSignFullPath = FILE_SYSTEM_PATH + encFilepath + '/' + signFileName
+    newFileFullPath = os.path.join(FILE_SYSTEM_PATH, encFilepath, encFileName)
+    newSignFullPath = os.path.join(FILE_SYSTEM_PATH, encFilepath, signFileName)
 
-    encContent = fernet.encrypt(content.encode())
+    # Take string content and encode it utf 8
+    # encrypt that encoded content
+    # write that to a file
+    # hash that encoded content
+    # encrypt that hash
+    # write that to a file
+    encodedContent = content.encode()
+    encryptedContent = fernet.encrypt(encodedContent)
 
-    hasher.update(content.encode())
+    hasher.update(encodedContent)
     hashedContent = hasher.digest()
     signature = fernet.encrypt(hashedContent)
     
     try:
         os.makedirs(os.path.dirname(newFileFullPath), exist_ok=True)
         with open(newFileFullPath, 'wb') as file:
-            file.write(encContent)
+            file.write(encryptedContent)
         with open(newSignFullPath, 'wb') as file:
             file.write(signature)
     except Exception as e:
@@ -70,17 +76,34 @@ def getFile(filename):
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
+    # if file not found return None
+    if not os.path.isfile(FILE_SYSTEM_PATH + filename):
+        return None
+    
     with open(FILE_SYSTEM_PATH + filename, 'rb') as file:
         content = file.read()
     with open (FILE_SYSTEM_PATH + signatureFileName, 'rb') as file:
         signature = file.read()
+        
+    # get the bytes signature
+    # get the bytes content
     
-    hasher.update(content)
+    # decrypt the content -> that gets us the utdf8 encoded content
+    # decrypt the signature -> that gets us the hash of the encoded content
+    
+    # hash the utf 8 encoded content
+    # compare the hash to the decrypted signature
+    
+    utf8Content = fernet.decrypt(content)
+    signhash = fernet.decrypt(signature)
+    
+    hasher.update(utf8Content)
     hashedContent = hasher.digest()
-    if fernet.decrypt(signature) == hashedContent:
-        return fernet.decrypt(content).decode()
+    
+    if hashedContent == signhash:
+        return utf8Content.decode()
     else:
-        return 'Signature does not match'
+        return None
     
 def encryptText(text):
     """Given a string, returns the encrypted version of the string."""

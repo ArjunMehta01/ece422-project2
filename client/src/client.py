@@ -51,7 +51,7 @@ def login(socket, public_key):
     response = socket.recv()
     print("Received:", response)
     
-    if response.lower() == 'login failed':
+    if response.lower() == 'login failed' or response.lower() == 'invalid pubkey':
         return False
     
     return True
