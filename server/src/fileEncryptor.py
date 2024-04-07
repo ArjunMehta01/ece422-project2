@@ -42,14 +42,12 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
         encFileName = filename
     
     signFileName = encFileName + '.sign'
-    
-    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
-    # print(FILE_SYSTEM_PATH)
-    newFileFullPath = FILE_SYSTEM_PATH + encFilepath + '/' + encFileName
-    newSignFullPath = FILE_SYSTEM_PATH + encFilepath + '/' + signFileName
+
+    newFileFullPath = FILE_SYSTEM_PATH + encFilepath + '\\' + encFileName
+    newSignFullPath = FILE_SYSTEM_PATH + encFilepath + '\\' + signFileName
 
     encContent = fernet.encrypt(content.encode())
-
+    
     hasher.update(content.encode())
     hashedContent = hasher.digest()
     signature = fernet.encrypt(hashedContent)
@@ -65,7 +63,6 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
 
 def getFile(filename):
     """Given an encrypted filename, returns the decrypted content of the file."""
-    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
     signatureFileName = filename + '.sign'
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
