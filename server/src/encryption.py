@@ -2,12 +2,11 @@ import rsa
 import os
 from Crypto.Cipher import AES
 import struct
-import dotenv
 
 MESSAGE_SIZE = 1024
 
-PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
-PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
+PUB_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\id_rsa.pub'
+PRIV_KEY_FILE_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\id_rsa'
 
 # takes a raw socket and gives sendall + recv methods that do communication with rsa encryption
 # load up the private key from a local file
@@ -112,8 +111,3 @@ def load_priv_or_create_keys():
 		with open(PRIV_KEY_FILE_PATH, 'wb') as f:
 			f.write(private_key.save_pkcs1())
 	return private_key
-
-
-def getRSAKey(str: str):
-	"""Turns a string into an RSA key"""
-	return rsa.PublicKey.load_pkcs1(str.encode())

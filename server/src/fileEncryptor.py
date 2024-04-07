@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 import os
 import hashlib
 
-FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
+FILE_SYSTEM_PATH = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\filesystem\\'
 
 def load_or_create_key():
     """
@@ -12,7 +12,7 @@ def load_or_create_key():
     and then loads the key.
     """
     # Try to load the key from the file
-    filepath = os.getenv('SECRETS_PATH') + 'FERNET_KEY'
+    filepath = 'C:\\Users\\svirk\\Documents\\SehbazzPersonal\\ECE422\\ece422-project2\\server\\.secrets\\FERNET_KEY'
     try:
         with open(filepath, "rb") as key_file:
             key = key_file.read()
@@ -31,16 +31,12 @@ def load_or_create_key():
 FERNET_KEY = load_or_create_key()
 
 
-def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = True):
+def storeFile(encFilepath: str, filename: str, content: str):
     """Given an encrypted filepath and an unencrypted filename, stores the content of the file in the encrypted filepath."""
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
-    if encryptFileName:
-        encFileName = fernet.encrypt(filename.encode()).decode()
-    else:
-        encFileName = filename
-    
+    encFileName = fernet.encrypt(filename.encode()).decode()
     signFileName = encFileName + '.sign'
 
     newFileFullPath = FILE_SYSTEM_PATH + encFilepath + '\\' + encFileName

@@ -1,15 +1,14 @@
 import socket
 from encryption import rsaSocket
-from auth import login, init_auth
-import dotenv
-from pathlib import Path
+from auth import login
+import filesystem
 
-dotenv_path = Path('../.env')
-dotenv.load_dotenv(dotenv_path=dotenv_path)
+
+MESSAGE_SIZE = 1024
 
 def main():
 	server_socket = startServer('localhost', 12345)
-	init_auth()
+	filesystem.init('admin', 'currently_unhashed', [])
 
 	while True:
 		connection, client_address = server_socket.accept()
@@ -39,10 +38,10 @@ def handleClient(connection):
 
 	rsaConnection = rsaSocket(connection)
 
-	(authenticated, conn) = login(rsaConnection.recv())
+	(authenticated, user) = login(rsaConnection.recv())
 
-	if conn.getPubKey() is not None:
-		rsaConnection.setPubKey(conn.getPubKey())
+	if user.get_pub_key() is not None:
+		rsaConnection.setPubKey(user.get_pub_key())
 	else:
 		connection.sendall("INVALID PUBKEY") # unencrypted
 		return
