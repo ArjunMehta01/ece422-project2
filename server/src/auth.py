@@ -5,7 +5,6 @@
 
 from fileEncryptor import storeFile, getFile
 from argon2 import PasswordHasher
-from clientConnection import clientConnection
 from encryption import getRSAKey
 
 class user:
@@ -34,21 +33,22 @@ def login(login_string):
 
 	user_dict = getUsers()
 	if username not in user_dict:
-		return (False, None)
+		return (False, None, None)
 	else:
 		user = user_dict[username]
 		acc_pass_hash = user.get_passHash()
 		test_pass_hash = PasswordHasher().verify(acc_pass_hash, password)
 
 		if test_pass_hash:
-			clientConn = clientConnection(getRSAKey(pub_key_str), username)
-			return (True, clientConn)
+			return (True, getRSAKey(pub_key_str), username)
 		else:
-			return (False, None)
+			return (False, None, None)
 
 def create_user(username, password, groups):
     passHash = PasswordHasher().hash(password)
-    return user(username, passHash, groups)
+    new_user = user(username, passHash, groups)
+    modify_user(new_user)
+    return new_user
 
 def init_auth():
     filename = '.user'
@@ -80,14 +80,11 @@ def getUsers() -> dict[str, user]:
         line = line.strip()
         if line == '===':
             if user_info:
-                users_dict[user_info['username']] = user(user_info['username'], user_info['passHash'], user_info['groups'])
+                users_dict[user_info['username']] = user(user_info['username'], user_info['passHash'], user_info['group'])
                 user_info = {}
         else:
             key, value = line.split(': ')
-            if key == 'groups':
-                user_info[key] = value[1:-1].split(', ')
-            else:
-                user_info[key] = value
+            user_info[key] = value
     
     return users_dict
 

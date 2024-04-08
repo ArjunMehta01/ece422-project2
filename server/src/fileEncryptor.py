@@ -68,6 +68,8 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
             file.write(signature)
     except Exception as e:
         print(f'Error writing file: {e}')
+        
+    return encFileName
 
 def getFile(filename):
     """Given an encrypted filename, returns the decrypted content of the file."""
@@ -84,15 +86,6 @@ def getFile(filename):
         content = file.read()
     with open (FILE_SYSTEM_PATH + signatureFileName, 'rb') as file:
         signature = file.read()
-        
-    # get the bytes signature
-    # get the bytes content
-    
-    # decrypt the content -> that gets us the utdf8 encoded content
-    # decrypt the signature -> that gets us the hash of the encoded content
-    
-    # hash the utf 8 encoded content
-    # compare the hash to the decrypted signature
     
     utf8Content = fernet.decrypt(content)
     signhash = fernet.decrypt(signature)
@@ -112,5 +105,33 @@ def encryptText(text):
     
 def decryptFileName(encFileName):
     """Given an encrypted filename, returns the decrypted version of the filename."""
+    if encFileName == '':
+        return ''
     fernet = Fernet(FERNET_KEY)
     return fernet.decrypt(encFileName.encode()).decode()
+
+def make_directory(filepath, dirname):
+    """Given an encrypted filepath and an unencrypted directory name, creates a new directory in the encrypted filepath."""
+    fernet = Fernet(FERNET_KEY)
+    encDirName = fernet.encrypt(dirname.encode()).decode()
+    newDirFullPath = os.path.join(FILE_SYSTEM_PATH, filepath, encDirName)
+    try:
+        os.makedirs(newDirFullPath, exist_ok=True)
+    except Exception as e:
+        print(f'Error creating directory: {e}')
+    
+    # store a .sign file at the directory path where the contents are the hash of the directory name
+    hasher = hashlib.sha256()
+    hasher.update(newDirFullPath.encode())
+    
+    signFileName = encDirName + '.sign'
+    newSignFullPath = os.path.join(FILE_SYSTEM_PATH, filepath, signFileName)
+    
+    signature = fernet.encrypt(hasher.digest())
+    try:
+        with open(newSignFullPath, 'wb') as file:
+            file.write(signature)
+    except Exception as e:
+        print(f'Error writing sign file: {e}')
+    
+    return encDirName

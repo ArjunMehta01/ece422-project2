@@ -1,9 +1,10 @@
 import socket
 from encryption import rsaSocket
-from auth import login, init_auth
+from auth import login, init_auth, create_user
 import dotenv
 from pathlib import Path
 import os
+from clientConnection import clientConnection
 
 dotenv_path = Path('../.env')
 dotenv.load_dotenv(dotenv_path=dotenv_path)
@@ -38,7 +39,8 @@ def startServer(ip, port):
 def handleClient(connection):
 	rsaConnection = rsaSocket(connection)
 
-	(authenticated, conn) = login(rsaConnection.recv())
+	(authenticated, server_pub_key, username) = login(rsaConnection.recv())
+	conn = clientConnection(server_pub_key, username)
 
 	if conn.getPubKey() is not None:
 		rsaConnection.setClientPubKey(conn.getPubKey())
@@ -51,3 +53,38 @@ def handleClient(connection):
 		return
 	
 	rsaConnection.send("LOGIN SUCCESS")
+ 
+	while True:
+		data = rsaConnection.recv()
+		tokens = data.split(' ')
+		cmd = tokens[0]
+		if cmd == 'pwd':
+			rsaConnection.send('~/' + conn.current_folder.unencryptedPath)
+		elif cmd == 'ls':
+			rsaConnection.send(str(conn.current_folder.list_files_in_folder()))
+		elif cmd == 'cd':
+			dir = tokens[1]
+			conn.stepIntoDirectory(dir)
+		elif cmd == 'mkdir':
+			conn.current_folder.make_directory(tokens[1])
+		elif cmd == 'touch':
+			conn.current_folder.make_empty_file(tokens[1])
+		elif cmd == 'cat':
+			filename = tokens[1]
+			rsaConnection.send(str(conn.current_folder.get_file_content(filename)))
+		elif cmd == 'echo':
+			filename = tokens[1]
+			content = tokens[2]
+			conn.current_folder.make_file(filename, content)
+		elif cmd == 'mv':
+			conn.current_folder.rename_file(tokens[1], tokens[2])
+		elif cmd == 'chmod':
+			conn.current_folder.modify_file_permissions(tokens[1], tokens[2])
+		elif cmd == 'create_user':
+			username = tokens[1]
+			password = tokens[2]
+			groups = tokens[3]
+			create_user(username, password, groups)
+   
+if __name__ == "__main__":
+    main()

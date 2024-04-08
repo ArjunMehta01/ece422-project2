@@ -76,13 +76,13 @@ def process_command(socket, message):
     elif tokenized_command[0] == "ls":
         if len(tokenized_command) != 1:
             print("ls: too few/many arguments")
+            return False
+        else:
+            socket.send(message)
             
             result = socket.recv()
             print(result)
             
-            return False
-        else:
-            socket.send(message)
             return True
     elif tokenized_command[0] == 'cd':
         if len(tokenized_command) != 2:
