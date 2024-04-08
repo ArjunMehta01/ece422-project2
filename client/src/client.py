@@ -19,19 +19,14 @@ def main():
             if logged_in:
                 while True:
                     message = input("Enter your message:")
-                    server_socket.send(message)
-                    print("Sending:", message)
-                
-                    # Receive data
-                    response = server_socket.recv()
-                    print("Received:", response)
                     
-                    if message.lower()== "LOGOUT":
+                    if message.lower()== "logout":
                         logged_in = False
                         break
-            if message.lower() == 'exit':
-                print("EXITING....")
-                break
+                    
+                    process_command(server_socket, message)
+            print("EXITING....")
+            break
     except ConnectionRefusedError:
         print("[ERROR] Connection refused. Make sure the server is running.")
     except KeyboardInterrupt:
@@ -42,7 +37,6 @@ def main():
     
 
 def login(socket, public_key):
-    print("LOGIN PLZ")
     username = input("Enter your username: ")
     password = input("Enter your password: ")
     message = username + "][" + password + "][" + public_key
@@ -74,10 +68,18 @@ def process_command(socket, message):
             return False
         else:
             socket.send(message)
+            
+            result = socket.recv()
+            print(result)
+            
             return True
     elif tokenized_command[0] == "ls":
         if len(tokenized_command) != 1:
             print("ls: too few/many arguments")
+            
+            result = socket.recv()
+            print(result)
+            
             return False
         else:
             socket.send(message)

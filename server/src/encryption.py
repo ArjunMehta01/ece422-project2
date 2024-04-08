@@ -2,7 +2,6 @@ import rsa
 import os
 from Crypto.Cipher import AES
 import struct
-import dotenv
 
 MESSAGE_SIZE = 1024
 

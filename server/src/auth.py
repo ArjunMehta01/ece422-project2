@@ -9,13 +9,13 @@ from clientConnection import clientConnection
 from encryption import getRSAKey
 
 class user:
-    def __init__(self, username, passHash, groups):
+    def __init__(self, username, passHash, group):
         self.username = username
         self.passHash = passHash
-        self.groups = groups
+        self.group = group
     
     def __repr__(self) -> str:
-        return f'username: {self.username}\npassHash: {self.passHash}\ngroups: {self.groups}\n===\n'
+        return f'username: {self.username}\npassHash: {self.passHash}\ngroup: {self.group}\n===\n'
     
     def get_username(self):
         return self.username
@@ -23,11 +23,11 @@ class user:
     def get_passHash(self):
         return self.passHash
     
-    def get_groups(self):
-        return self.groups
+    def get_group(self):
+        return self.group
     
-    def add_group(self, group):
-        self.groups.append(group)
+    def set_group(self, group):
+        self.group = group
 
 def login(login_string):
 	username, password, pub_key_str = login_string.split('][')
@@ -54,9 +54,9 @@ def init_auth():
     filename = '.user'
     ADMIN_USERNAME = "admin"
     ADMIN_PASS = "admin"
-    ADMIN_GROUPS = ["admin"]
+    ADMIN_GROUP = "admin"
     
-    admin_user = create_user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUPS)
+    admin_user = create_user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUP)
     
     # if the file already exists, don't overwrite it
     if getFile(filename):
@@ -88,7 +88,6 @@ def getUsers() -> dict[str, user]:
                 user_info[key] = value[1:-1].split(', ')
             else:
                 user_info[key] = value
-        
     
     return users_dict
 

@@ -110,4 +110,7 @@ def encryptText(text):
     fernet = Fernet(FERNET_KEY)
     return fernet.encrypt(text.encode()).decode()
     
-    
+def decryptFileName(encFileName):
+    """Given an encrypted filename, returns the decrypted version of the filename."""
+    fernet = Fernet(FERNET_KEY)
+    return fernet.decrypt(encFileName.encode()).decode()

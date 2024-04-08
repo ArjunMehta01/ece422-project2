@@ -16,10 +16,8 @@ def main():
 
 	while True:
 		connection, client_address = server_socket.accept()
-
 		try:
 			print("Connection from", client_address)
-
 			handleClient(connection) # if we have time for multiconnection we just need to run this function in a thread
    
 		except Exception as e:
@@ -27,7 +25,6 @@ def main():
 		finally:
 			# Clean up the connection
 			connection.close()
-
 
 def startServer(ip, port):
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,7 +36,6 @@ def startServer(ip, port):
 	return server_socket
 
 def handleClient(connection):
-
 	rsaConnection = rsaSocket(connection)
 
 	(authenticated, conn) = login(rsaConnection.recv())
@@ -55,12 +51,3 @@ def handleClient(connection):
 		return
 	
 	rsaConnection.send("LOGIN SUCCESS")
-	# start accepting and processing commands
-	while True:
-		command = rsaConnection.recv()
-		rsaConnection.send("COMMAND RECEIVED")
-		print(command)
-  
-  
-if __name__ == "__main__" :
-    main()
