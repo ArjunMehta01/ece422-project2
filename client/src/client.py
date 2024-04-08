@@ -92,7 +92,6 @@ def process_command(socket, message):
             socket.send(message)
             return True  
     elif tokenized_command[0] == 'mkdir':
-        print("mkdir: too few/many arguments")
         if len(tokenized_command) != 2:
             print("mkdir: too few/many arguments")
             return False
@@ -112,10 +111,14 @@ def process_command(socket, message):
             return False
         else:
             socket.send(message)
+
+            result = socket.recv()
+            print(result)
+
             return True  
           
     elif tokenized_command[0] == 'echo':
-        if len(tokenized_command) != 2:
+        if len(tokenized_command) != 3:
             print("echo: too few/many arguments")
             return False
         else:
@@ -123,12 +126,20 @@ def process_command(socket, message):
             return True
   
     elif tokenized_command[0] == 'mv':
-        if len(tokenized_command) != 2:
+        if len(tokenized_command) != 3:
             print("mv: too few/many arguments")
             return False
         else:
             socket.send(message)
             return True  
+    
+    elif tokenized_command[0] == 'create_user':
+        if len(tokenized_command) != 4:
+            print("create_user: too few/many arguments")
+            return False
+        else:
+            socket.send(message)
+            return True
     else:
         print("invalid command")
         return False

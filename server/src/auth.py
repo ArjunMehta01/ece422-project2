@@ -51,22 +51,11 @@ def create_user(username, password, groups):
     return new_user
 
 def init_auth():
-    filename = '.user'
     ADMIN_USERNAME = "admin"
     ADMIN_PASS = "admin"
     ADMIN_GROUP = "admin"
     
-    admin_user = create_user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUP)
-    
-    # if the file already exists, don't overwrite it
-    if getFile(filename):
-        return
-    
-    try:
-        storeFile('', filename, '', False)
-        modify_user(admin_user)
-    except Exception as e:
-        print(f'Error initializing file: {e}')
+    create_user(ADMIN_USERNAME, ADMIN_PASS, ADMIN_GROUP)
      
 def getUsers() -> dict[str, user]:
     filename = '.user'
@@ -74,6 +63,8 @@ def getUsers() -> dict[str, user]:
     
     users_dict = {}
     user_info = {}
+    if not usersFileContent:
+        return users_dict
     for line in usersFileContent.split('\n'):
         if not line:
             continue

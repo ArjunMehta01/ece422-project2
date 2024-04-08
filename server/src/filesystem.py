@@ -1,31 +1,4 @@
-# get all the permissions for the files/folders in root
-# check which ones are owned by the user
-# exactly one of them should be a folder named after the user -- encrypted
-# decrypt all the names of all the files/folders in that folder
-# if the username folder doesnt exist, create it
-# set the user conn current directory into that folder
-
-# get all the permissions for the files/folders in that folder
-# check which ones are owned by the user
-# decrypt the names of those and store them smwhere so they can be accessed later
-# make sure to map encrypted names to unencrypted names
-
-# PERMISSIONS class
-# loads all permissions at launch
-# gives methods to modify permissions for each filename
-
-# FOLDER class
-# - unencrypted path
-# - load all files in the folder (assuming your user permission)
-# keeps a dictionary of encrypted names to unencrypted names (if no permission, unencrypted is just encrypted)
-# if no permission, just loads an encrypted name and content is CANNOT ACCESS!
-
-# FILE class
-# - unencrypted path (for displaying to user)
-# - encrypted path (for use in file encryptor)
-# content
-
-from fileEncryptor import storeFile, getFile, decryptFileName, make_directory as _make_directory
+from fileEncryptor import storeFile, getFile, decryptFileName, make_directory as _make_directory, modifyFile
 from auth import getUsers
 import os
 
@@ -79,7 +52,10 @@ class permissions:
 class folder:
     def __init__(self, encryptedPath, accessingUser):
         self.encryptedPath = encryptedPath
-        self.unencryptedPath = decryptFileName(encryptedPath)
+        # get path tokens from by seperating the path by the os's file seperator
+        pathTokens = encryptedPath.split(os.sep)
+        # decrypt all path tokens and rejoin with the os's file seperator
+        self.unencryptedPath = os.sep.join([decryptFileName(token) for token in pathTokens])
         self.accessingUser = accessingUser
         self.fileMap = {} # maps the encrypted names of files to the File objects
         self.authenticated = self.check_self_permissions()
@@ -152,12 +128,12 @@ class folder:
     
     
     def list_files_in_folder(self):
-        """Returns a list of the names of the files and folders in this folder."""
+        """Returns a list of the names of the files and folders in this folder that the user has access to"""
         files = []
         for file in self.fileMap.values():
             fullPath = file.get_unencrypted_name()
             if not fullPath:
-                fullPath = file.get_encrypted_path()
+                continue
             # pull out just the filename using this os's file seperator
             files.append(fullPath.split(os.sep)[-1])
         return files
@@ -176,11 +152,11 @@ class folder:
         file = self.fileMap[encFileName]
         return file.get_content()
     
-    def make_directory(self, dirname):
+    def make_directory(self, dirname, permission_mode='USER'):
         """Given an unencrypted directory name, creates a new directory in the current folder."""
         encDirName = _make_directory(self.encryptedPath, dirname)
         perms = permissions()
-        perms.add_new_permission(os.path.join(self.encryptedPath, encDirName), 'USER', self.accessingUser)
+        perms.add_new_permission(os.path.join(self.encryptedPath, encDirName), permission_mode, self.accessingUser)
         self.load_files()
         
     def make_empty_file(self, name):
@@ -192,9 +168,23 @@ class folder:
     
     def make_file(self, name, content):
         """Given an unencrypted file name and content, creates a new file in the current folder."""
-        storeFile(self.encryptedPath, name, content, True)
+        encFileName = storeFile(self.encryptedPath, name, content, True)
         perms = permissions()
-        perms.set_permission_mode(os.path.join(self.encryptedPath, name), 'USER')
+        perms.set_permission_mode(os.path.join(self.encryptedPath, encFileName), 'USER')
+        self.load_files()
+
+    def modify_file_content(self, name, content):
+        """Given the unencrypted name of a file and new content, changes the content of the file."""
+        # need to get the encrypted name of the file by iterating over all the files in the folder
+        encFileName = None
+        for file in self.fileMap.values():
+            if file.get_unencrypted_name() == name:
+                encFileName = file.get_encrypted_path()
+                break
+        else:
+            return 'FILE NOT FOUND'
+        
+        modifyFile(encFileName, content)
         self.load_files()
     
     def rename_file(self, oldName, newName):
@@ -206,6 +196,9 @@ class folder:
             if file.get_unencrypted_name() == oldName:
                 oldEncName = file.get_encrypted_path()
                 break
+
+        if not oldEncName:
+            return 'FILE NOT FOUND'
         
         # load content of old file
         content = self.fileMap[oldEncName].get_content()
@@ -215,6 +208,7 @@ class folder:
         
         # delete old file
         os.remove(oldEncName)
+        os.remove(oldEncName + '.sign')
         
     def get_enc_file_name(self, filename):
         """Given the unencrypted name of a file, returns the encrypted path of the file."""

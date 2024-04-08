@@ -64,18 +64,24 @@ def handleClient(connection):
 			rsaConnection.send(str(conn.current_folder.list_files_in_folder()))
 		elif cmd == 'cd':
 			dir = tokens[1]
+
+			if dir == '..':
+				conn.stepOutOfDirectory()
+				continue
+
 			conn.stepIntoDirectory(dir)
+			pass
 		elif cmd == 'mkdir':
 			conn.current_folder.make_directory(tokens[1])
 		elif cmd == 'touch':
 			conn.current_folder.make_empty_file(tokens[1])
 		elif cmd == 'cat':
 			filename = tokens[1]
-			rsaConnection.send(str(conn.current_folder.get_file_content(filename)))
+			rsaConnection.send(conn.current_folder.get_file_content(filename))
 		elif cmd == 'echo':
 			filename = tokens[1]
 			content = tokens[2]
-			conn.current_folder.make_file(filename, content)
+			conn.current_folder.modify_file_content(filename, content)
 		elif cmd == 'mv':
 			conn.current_folder.rename_file(tokens[1], tokens[2])
 		elif cmd == 'chmod':
@@ -83,8 +89,8 @@ def handleClient(connection):
 		elif cmd == 'create_user':
 			username = tokens[1]
 			password = tokens[2]
-			groups = tokens[3]
-			create_user(username, password, groups)
+			group = tokens[3]
+			create_user(username, password, group)
    
 if __name__ == "__main__":
     main()

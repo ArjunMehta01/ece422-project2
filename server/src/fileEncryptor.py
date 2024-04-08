@@ -61,7 +61,7 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
     signature = fernet.encrypt(hashedContent)
     
     try:
-        os.makedirs(os.path.dirname(newFileFullPath), exist_ok=True)
+        os.makedirs(os.path.dirname(newFileFullPath), exist_ok=True) #update to use make_directory
         with open(newFileFullPath, 'wb') as file:
             file.write(encryptedContent)
         with open(newSignFullPath, 'wb') as file:
@@ -70,6 +70,38 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
         print(f'Error writing file: {e}')
         
     return encFileName
+
+def modifyFile(encFilepath, content):
+    """Given an encrypted filepath and the new content of the file, modifies the content of the file in the encrypted filepath."""
+    fernet = Fernet(FERNET_KEY)
+    hasher = hashlib.sha256()
+    
+    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
+    encFileName = os.path.basename(encFilepath)
+    signFileName = encFileName + '.sign'
+    newFileFullPath = os.path.join(FILE_SYSTEM_PATH, encFilepath)
+    newSignFullPath = os.path.join(FILE_SYSTEM_PATH, os.path.dirname(encFilepath), signFileName)
+    
+    # Take string content and encode it utf 8
+    # encrypt that encoded content
+    # write that to a file
+    # hash that encoded content
+    # encrypt that hash
+    # write that to a file
+    encodedContent = content.encode()
+    encryptedContent = fernet.encrypt(encodedContent)
+
+    hasher.update(encodedContent)
+    hashedContent = hasher.digest()
+    signature = fernet.encrypt(hashedContent)
+    
+    try:
+        with open(newFileFullPath, 'wb') as file:
+            file.write(encryptedContent)
+        with open(newSignFullPath, 'wb') as file:
+            file.write(signature)
+    except Exception as e:
+        print(f'Error writing file: {e}')
 
 def getFile(filename):
     """Given an encrypted filename, returns the decrypted content of the file."""
