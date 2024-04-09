@@ -7,7 +7,8 @@ This repository contains our implementation of a secure file system. Follow the 
 The following steps are to be followed assuming a VM (Cybera VM) is set up for a server.
 1. Clone down the repository with the following commands:
     ```bash
-    $ what 
+    $ wget https://github.com/ArjunMehta01/ece422-project2/archive/refs/heads/master.zip
+    $ unzip master.zip -d master
     ```
 2. Install pip with the following command:
     ```bash
@@ -21,7 +22,7 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ mkdir .secrets
     $ mkdir filesystem
     ```
-4. Create a .env file containing the path to the .secrets and filesystem folders. The .env file should contain the following:
+4. Create a .env file at the same level as src containing the path to the .secrets and filesystem folders. The .env file should contain the following:
     ```
     FILESYSTEM_PATH=<Direct_Path_To_Filesystem>
     SECRETS_PATH=<Direct_Path_To_Secrets>
@@ -36,7 +37,8 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
 The following steps are to be followed assuming a VM (Cybera VM) is set up for a client.
 1. Clone down the repository with the following commands:
     ```bash
-    $ what 
+    $ wget https://github.com/ArjunMehta01/ece422-project2/archive/refs/heads/master.zip
+    $ unzip master.zip -d master
     ```
 2. Install pip with the following command:
     ```bash
@@ -45,15 +47,15 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ cd server
     $ pip install -r requirements.txt
     ```
-3. Start the client application with the following commands:
-    ```bash
-    $ Python client.py
-    ```
-4. Create a .env file containing the path to the .secrets and filesystem folders as well as the port and IP of the server. The .env file should contain the following:
+3. Create a .env file containing the path to the .secrets and filesystem folders as well as the port and IP of the server. The .env file should contain the following:
     ```
     SECRETS_PATH=<Direct_Path_To_Secrets>
     SERVER_IP=<Server_IP>
     SERVER_PORT=<Server_Port>
+    ```
+4. Start the client application with the following commands:
+    ```bash
+    $ Python client.py
     ```
 5. Upon system startup, login will be prompted. The admin credentials are listed below
    * Password: admin
@@ -76,6 +78,4 @@ Once logged in a user is placed in their home directory with several commands av
 9. chmod ?????: change permissions of a file
 10. create_user ?????: initialize a new user 
 11. logout: log the current user out of the system.
-
-
 
