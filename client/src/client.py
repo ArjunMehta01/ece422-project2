@@ -2,8 +2,9 @@ import socket
 from encryption import rsaSocket, load_server_pub_key
 import dotenv
 from pathlib import Path
+import os
 
-dotenv_path = Path('../.env')
+dotenv_path = Path('/home/ubuntu/ECE422_PROJ2/master/ece422-project2-master/client/.env')
 dotenv.load_dotenv(dotenv_path=dotenv_path)
 
 def main():
@@ -12,8 +13,8 @@ def main():
     logged_in = False
     
     # get ip and port from .env file
-    ip = dotenv.get('SERVER_IP')
-    port = int(dotenv.get('SERVER_PORT'))
+    ip = os.getenv('SERVER_IP')
+    port = int(os.getenv('SERVER_PORT'))
     
     try:
         server_socket = rsaSocket(ip, port)

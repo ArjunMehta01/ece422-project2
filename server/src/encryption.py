@@ -5,9 +5,6 @@ import struct
 
 MESSAGE_SIZE = 1024
 
-PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
-PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
-
 # takes a raw socket and gives sendall + recv methods that do communication with rsa encryption
 # load up the private key from a local file
 # include a method to set the client pubkey after construction since it only comes in on the first decrypted message
@@ -97,12 +94,16 @@ class rsaSocket:
 
 
 def load_priv_or_create_keys():
+
+	PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
+	PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
+
 	if os.path.exists(PRIV_KEY_FILE_PATH):
 		with open(PRIV_KEY_FILE_PATH, 'rb') as f:
 			private_key = rsa.PrivateKey.load_pkcs1(f.read())
 	else:
 		(public_key, private_key) = rsa.newkeys(1024)
-
+		
 		with open(PUB_KEY_FILE_PATH, 'wb') as f:
 			f.write(public_key.save_pkcs1())
 		with open(PRIV_KEY_FILE_PATH, 'wb') as f:

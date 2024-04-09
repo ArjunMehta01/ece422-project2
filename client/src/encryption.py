@@ -6,10 +6,6 @@ import struct
 
 MESSAGE_SIZE = 1024
 
-SERVER_PUB_KEY_PATH = os.getenv('SECRETS_PATH') + 'SERVER_PUB_KEY'
-PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
-PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
-
 class rsaSocket:
 	def __init__(self, serverIp, serverPort):
 		server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -106,8 +102,9 @@ class rsaSocket:
 		return self.pub_key.save_pkcs1().decode()
 	
 def load_keys_or_create_keys():
-
-	if os.path.exists(PRIV_KEY_FILE_PATH):
+	PUB_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa.pub'
+	PRIV_KEY_FILE_PATH = os.getenv('SECRETS_PATH') + 'id_rsa'
+	if os.path.exists(PRIV_KEY_FILE_PATH):	
 		with open(PRIV_KEY_FILE_PATH, 'rb') as f:
 			private_key = rsa.PrivateKey.load_pkcs1(f.read())
 		with open(PUB_KEY_FILE_PATH, 'rb') as f:
@@ -124,5 +121,6 @@ def load_keys_or_create_keys():
 	return private_key, public_key
 
 def load_server_pub_key():
+	SERVER_PUB_KEY_PATH = os.getenv('SECRETS_PATH') + 'SERVER_PUB_KEY'
 	with open(SERVER_PUB_KEY_PATH, 'rb') as pub_key_file:  # Assuming the public key is stored in a file named 'public_key.pem'
 		return rsa.PublicKey.load_pkcs1(pub_key_file.read())

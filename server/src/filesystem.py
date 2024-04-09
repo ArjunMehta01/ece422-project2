@@ -144,7 +144,8 @@ class folder:
         for file in self.fileMap.values():
             fullPath = file.get_unencrypted_name()
             if not fullPath:
-                continue
+                fullPath = file.get_encrypted_path()
+                fullPath = os.path.basename(fullPath)
             # pull out just the filename using this os's file seperator
             files.append(fullPath.split(os.sep)[-1])
         return files
@@ -307,6 +308,6 @@ def verify_integrity(user):
             else: # data type is file
                 result = verify_file_integrity(encFileName)
                 if not result:
-                    integrity_failures.append(decryptFileName(encFileName))
+                    integrity_failures.append(decryptFilepath(encFileName))
     
     return integrity_failures

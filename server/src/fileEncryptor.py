@@ -3,8 +3,6 @@ from cryptography.fernet import Fernet
 import os
 import hashlib
 
-FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
-
 def load_or_create_key():
     """
     Tries to load a Fernet key from a binary file. If the file does not exist,
@@ -28,10 +26,11 @@ def load_or_create_key():
     # Return the loaded or newly generated key
     return key
 
-FERNET_KEY = load_or_create_key()
+
 
 def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = True):
     """Given an encrypted filepath and an unencrypted filename, stores the content of the file in the encrypted filepath."""
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
@@ -73,6 +72,7 @@ def storeFile(encFilepath: str, filename: str, content: str, encryptFileName = T
 
 def modifyFile(encFilepath, content):
     """Given an encrypted filepath and the new content of the file, modifies the content of the file in the encrypted filepath."""
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
@@ -107,6 +107,7 @@ def getFile(filename):
     """Given an encrypted filename, returns the decrypted content of the file."""
     FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
     signatureFileName = filename + '.sign'
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
@@ -132,6 +133,7 @@ def getFile(filename):
     
 def encryptText(text):
     """Given a string, returns the encrypted version of the string."""
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     return fernet.encrypt(text.encode()).decode()
     
@@ -139,11 +141,13 @@ def decryptFileName(encFileName):
     """Given an encrypted filename, returns the decrypted version of the filename."""
     if encFileName == '':
         return ''
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     return fernet.decrypt(encFileName.encode()).decode()
 
 def decryptFilepath(encFilepath):
     """Given an encrypted filepath, returns the decrypted version of the filepath."""
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     # split the path into tokens
     pathTokens = encFilepath.split(os.sep)
@@ -154,6 +158,8 @@ def decryptFilepath(encFilepath):
 
 def make_directory(filepath, dirname):
     """Given an encrypted filepath and an unencrypted directory name, creates a new directory in the encrypted filepath."""
+    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     encDirName = fernet.encrypt(dirname.encode()).decode()
     newDirFullPath = os.path.join(FILE_SYSTEM_PATH, filepath, encDirName)
@@ -180,6 +186,8 @@ def make_directory(filepath, dirname):
 
 def verify_folder_integrity(encFolderPath):
     """Given the encrypted path to a folder, compare it's filepath to the hash stored in the .sign file."""
+    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     
@@ -207,6 +215,8 @@ def verify_folder_integrity(encFolderPath):
 
 def verify_file_integrity(encFilePath):
     """Given the encrypted path to a file, compare it's content to the hash stored in the .sign file."""
+    FILE_SYSTEM_PATH = os.getenv('FILESYSTEM_PATH')
+    FERNET_KEY = load_or_create_key()
     fernet = Fernet(FERNET_KEY)
     hasher = hashlib.sha256()
     

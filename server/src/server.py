@@ -6,13 +6,13 @@ from pathlib import Path
 import os
 from clientConnection import clientConnection
 
-dotenv_path = Path('../.env')
+dotenv_path = Path('/home/ubuntu/ECE422_PROJ2/master/ece422-project2-master/server/.env')
 dotenv.load_dotenv(dotenv_path=dotenv_path)
 
 def main():
 	print(os.getenv('SECRETS_PATH'))
 	print(os.getenv('FILESYSTEM_PATH'))
-	server_socket = startServer('0.0.0.0', 12345)
+	server_socket = startServer('0.0.0.0', 12347)
 	init_auth()
 
 	while True:
