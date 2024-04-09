@@ -75,7 +75,11 @@ Once logged in a user is placed in their home directory with several commands av
 6. cat <file_name>: read a file.
 7. echo <file_name> <text>: write to a file, currently our implementation does not allow for spaces in the text. 
 8. mv <original_file_name> <new_file_name>: rename a file.
-9. chmod ?????: change permissions of a file
-10. create_user ?????: initialize a new user 
+9. chmod <name_of_file> <USER | GROUP | ALL>: Change permissions of a file
+10. create_user <username> <password> <group>: Initialize a new user
 11. logout: log the current user out of the system.
+
+
+
+
 
