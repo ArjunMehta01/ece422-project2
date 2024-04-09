@@ -50,7 +50,7 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
 3. Create a .env file containing the path to the .secrets and filesystem folders as well as the port and IP of the server. The .env file should contain the following:
     ```
     SECRETS_PATH=<Direct_Path_To_Secrets>
-    SERVER_IP=<Server_IP>
+    SERVER_IP=12347
     SERVER_PORT=<Server_Port>
     ```
 4. Start the client application with the following commands:
