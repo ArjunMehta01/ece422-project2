@@ -10,9 +10,9 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ wget https://github.com/ArjunMehta01/ece422-project2/archive/refs/heads/master.zip
     $ unzip master.zip -d master
     ```
-2. Install pip with the following command:
+2. Install pip with the following command. Python3.10 is required for the application:
     ```bash
-    $ sudo apt-get -y install python3.10
+    $ sudo apt-get -y install python3
     $ sudo apt -y install python-pip
     $ cd server
     $ pip install -r requirements.txt
@@ -40,9 +40,9 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ wget https://github.com/ArjunMehta01/ece422-project2/archive/refs/heads/master.zip
     $ unzip master.zip -d master
     ```
-2. Install pip with the following command:
+2. Install pip with the following command. Python3.10 is required for the application:
     ```bash
-    $ sudo apt-get -y install python3.10
+    $ sudo apt-get -y install python3
     $ sudo apt -y install python-pip
     $ cd server
     $ pip install -r requirements.txt
@@ -55,7 +55,7 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     ```
 4. Start the client application with the following commands:
     ```bash
-    $ Python3 client.py
+    $ Python3 src/client.py
     ```
 5. Upon system startup, login will be prompted. The admin credentials are listed below
    * Password: admin
