@@ -22,7 +22,10 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ mkdir filesystem
     ```
 4. Create a .env file containing the path to the .secrets and filesystem folders. The .env file should contain the following:
-    
+    ```
+    FILESYSTEM_PATH=<Direct_Path_To_Filesystem>
+    SECRETS_PATH==<Direct_Path_To_Secrets>
+    ```
    
 6. Start the server with the following commands:
     ```bash
