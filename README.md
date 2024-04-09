@@ -18,7 +18,7 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     ```
 3. Start the server with the following commands:
     ```bash
-    $ what
+    $ Python server.py
     ```
 
 ## Client Deployment
@@ -36,7 +36,7 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     ```
 3. Start the client application with the following commands:
     ```bash
-    $ what
+    $ Python client.py
     ```
 4. Upon system startup, login will be prompted. The admin credentials are listed below
    * Password: admin
