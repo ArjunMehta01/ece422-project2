@@ -142,6 +142,16 @@ def decryptFileName(encFileName):
     fernet = Fernet(FERNET_KEY)
     return fernet.decrypt(encFileName.encode()).decode()
 
+def decryptFilepath(encFilepath):
+    """Given an encrypted filepath, returns the decrypted version of the filepath."""
+    fernet = Fernet(FERNET_KEY)
+    # split the path into tokens
+    pathTokens = encFilepath.split(os.sep)
+    # decrypt each token
+    decPathTokens = [fernet.decrypt(token.encode()).decode() for token in pathTokens]
+    # rejoin the tokens
+    return os.sep.join(decPathTokens)
+
 def make_directory(filepath, dirname):
     """Given an encrypted filepath and an unencrypted directory name, creates a new directory in the encrypted filepath."""
     fernet = Fernet(FERNET_KEY)
@@ -167,3 +177,63 @@ def make_directory(filepath, dirname):
         print(f'Error writing sign file: {e}')
     
     return encDirName
+
+def verify_folder_integrity(encFolderPath):
+    """Given the encrypted path to a folder, compare it's filepath to the hash stored in the .sign file."""
+    fernet = Fernet(FERNET_KEY)
+    hasher = hashlib.sha256()
+    
+    signFileName = encFolderPath + '.sign'
+    signFilePath = os.path.join(FILE_SYSTEM_PATH, signFileName)
+    
+    encFullPath = os.path.join(FILE_SYSTEM_PATH, encFolderPath)
+    
+    hasher.update(encFullPath.encode())
+    
+    # if the sign file is not found, return False
+    if not os.path.isfile(signFilePath):
+        return False
+    
+    with open(signFilePath, 'rb') as file:
+        signature = file.read()
+    
+    signhash = fernet.decrypt(signature)
+    hashedContent = hasher.digest()
+    
+    if hashedContent == signhash:
+        return True
+    else:
+        return False
+
+def verify_file_integrity(encFilePath):
+    """Given the encrypted path to a file, compare it's content to the hash stored in the .sign file."""
+    fernet = Fernet(FERNET_KEY)
+    hasher = hashlib.sha256()
+    
+    signFileName = encFilePath + '.sign'
+    signFilePath = os.path.join(FILE_SYSTEM_PATH, signFileName)
+    
+    fullFilePath = os.path.join(FILE_SYSTEM_PATH, encFilePath)
+    
+    # if either the file or the sign file is not found, return False
+    if not os.path.isfile(fullFilePath) or not os.path.isfile(signFilePath):
+        return False
+    
+    with open(fullFilePath, 'rb') as file:
+        content = file.read()
+    with open(signFilePath, 'rb') as file:
+        signature = file.read()
+    
+    try:
+        utf8Content = fernet.decrypt(content)
+        signhash = fernet.decrypt(signature)
+    except Exception as e:
+        return False
+    
+    hasher.update(utf8Content)
+    hashedContent = hasher.digest()
+    
+    if hashedContent == signhash:
+        return True
+    else:
+        return False

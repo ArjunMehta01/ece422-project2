@@ -1,5 +1,5 @@
 import os
-from filesystem import folder
+from filesystem import folder, verify_integrity
 # keep track of stuff like client pubkey current directory, any information for the currently active client connection
 class clientConnection:
 	def __init__(self, pub_key, username):
@@ -36,3 +36,7 @@ class clientConnection:
 
 	def getUsername(self):
 		return self.username
+
+	def verifyIntegrity(self) -> list[str]:
+		"""Verifies the integrity of the current directory and returns a list of corrupted files."""
+		return verify_integrity(self.username)

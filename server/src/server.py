@@ -52,7 +52,13 @@ def handleClient(connection):
 		rsaConnection.sendall("LOGIN FAILED") # switch to rsa socket
 		return
 	
-	rsaConnection.send("LOGIN SUCCESS")
+	bad_files = conn.verifyIntegrity()
+	if bad_files:
+		result_str = 'The following files may be corrupted: ' + ', '.join(bad_files)
+	else:
+		result_str = 'No corrupted files found'
+ 
+	rsaConnection.send("LOGIN SUCCESS: " + result_str)
  
 	while True:
 		data = rsaConnection.recv()
@@ -91,6 +97,8 @@ def handleClient(connection):
 			password = tokens[2]
 			group = tokens[3]
 			create_user(username, password, group)
-   
+		elif cmd == 'logout':
+			break
+		
 if __name__ == "__main__":
     main()

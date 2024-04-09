@@ -22,6 +22,7 @@ def main():
                     
                     if message.lower()== "logout":
                         logged_in = False
+                        server_socket.send(message.lower())
                         break
                     
                     process_command(server_socket, message)
@@ -132,6 +133,14 @@ def process_command(socket, message):
         else:
             socket.send(message)
             return True  
+    
+    elif tokenized_command[0] == 'chmod':
+        if len(tokenized_command) != 3:
+            print("chmod: too few/many arguments")
+            return False
+        else:
+            socket.send(message)
+            return True
     
     elif tokenized_command[0] == 'create_user':
         if len(tokenized_command) != 4:
