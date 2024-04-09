@@ -16,9 +16,17 @@ The following steps are to be followed assuming a VM (Cybera VM) is set up for a
     $ cd server
     $ pip install -r requirements.txt
     ```
-3. Start the server with the following commands:
+3. Create a .secrets and filesystem folder somewhere within the VM. We recommend placing these folders at the same level as src with the following commands. 
     ```bash
-    $ Python server.py
+    $ mkdir .secrets
+    $ mkdir filesystem
+    ```
+4. Create a .env file containing the path to the .secrets and filesystem folders. The .env file should contain the following:
+    
+   
+6. Start the server with the following commands:
+    ```bash
+    $ Python src/server.py
     ```
 
 ## Client Deployment
