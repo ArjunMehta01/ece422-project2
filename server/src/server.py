@@ -12,7 +12,7 @@ dotenv.load_dotenv(dotenv_path=dotenv_path)
 def main():
 	print(os.getenv('SECRETS_PATH'))
 	print(os.getenv('FILESYSTEM_PATH'))
-	server_socket = startServer('localhost', 12345)
+	server_socket = startServer('0.0.0.0', 12345)
 	init_auth()
 
 	while True:

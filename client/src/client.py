@@ -11,8 +11,12 @@ def main():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     logged_in = False
     
+    # get ip and port from .env file
+    ip = dotenv.get('SERVER_IP')
+    port = int(dotenv.get('SERVER_PORT'))
+    
     try:
-        server_socket = rsaSocket('localhost', 12345)
+        server_socket = rsaSocket(ip, port)
         
         while True:
             logged_in = login(server_socket, server_socket.get_pub_key_string())
